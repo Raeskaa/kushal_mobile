@@ -20,6 +20,7 @@ import { MobileEventsLanding } from './components/MobileEventsLanding';
 import { MobileIndividualEvent } from './components/MobileIndividualEvent';
 import { MobileEventCreationFlow } from './components/MobileEventCreationFlow';
 import { MobileProfile } from './components/MobileProfile';
+import { AccountCenterScreen, ManageLeapSpaceScreen } from './components/settings/MobileSettingsScreens';
 import { MobileSignIn } from './components/auth/MobileSignIn';
 import { MobileRegister } from './components/auth/MobileRegister';
 import { MobileMagicLinkSent } from './components/auth/MobileMagicLinkSent';
@@ -33,6 +34,7 @@ import { getMutationForFlow, getCompletionToast } from './data/leapyMutations';
 import { CommunityData } from './types';
 import { ShoppingBag, Clock, Video, X, ChevronLeft, Layout, Users, Mic, ArrowLeft } from 'lucide-react';
 import { EVENT_TEMPLATES } from './data/mockEventData';
+import { cloneMobileSettingsState, initialMobileSettingsState, type MobileSettingsState } from './data/mobileSettingsDemo';
 import { toast } from "sonner@2.0.3";
 
 type Page = 'home' | 'communities' | 'courses' | 'events' | 'leapy' | 'drafts' | 'marketplace';
@@ -95,8 +97,13 @@ function MobileAppInner() {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showLeapspaceSwitcher, setShowLeapspaceSwitcher] = useState(false);
-  const [currentLeapspace, setCurrentLeapspace] = useState('trueleap');
+  const [currentLeapspace, setCurrentLeapspace] = useState('trueleap-inc');
   const [showNavigationPatterns, setShowNavigationPatterns] = useState(false); // Demo closed
+  const [mobileSettings, setMobileSettings] = useState<MobileSettingsState>(() => cloneMobileSettingsState(initialMobileSettingsState));
+  const [showAccountCenter, setShowAccountCenter] = useState(false);
+  const [accountCenterGroup, setAccountCenterGroup] = useState<'profile' | 'account'>('profile');
+  const [accountCenterSection, setAccountCenterSection] = useState<string | null>(null);
+  const [showManageLeapSpace, setShowManageLeapSpace] = useState(false);
 
   // Community navigation state
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null);
@@ -227,6 +234,30 @@ function MobileAppInner() {
 
   const handleNotificationClick = () => {
     setShowNotifications(true);
+  };
+
+  const openMyProfile = () => {
+    setShowProfile(false);
+    setAccountCenterGroup('profile');
+    setAccountCenterSection(null);
+    setShowAccountCenter(true);
+  };
+
+  const openMyAccount = () => {
+    setShowProfile(false);
+    setAccountCenterGroup('account');
+    setAccountCenterSection(null);
+    setShowAccountCenter(true);
+  };
+
+  const openManageLeapSpace = () => {
+    if (currentLeapspace === 'all') {
+      setCurrentLeapspace(mobileSettings.leapspaces[0]?.id ?? 'trueleap-inc');
+    }
+
+    setShowProfile(false);
+    setShowLeapspaceSwitcher(false);
+    setShowManageLeapSpace(true);
   };
 
   const getPageTitle = () => {
@@ -513,6 +544,7 @@ function MobileAppInner() {
               console.log('🔄 Switching to leapspace:', leapspaceId);
               setCurrentLeapspace(leapspaceId);
             }}
+            onOpenManageLeapSpace={openManageLeapSpace}
           />
 
           {/* Leapy Sheet — Context-Aware AI */}
@@ -562,6 +594,9 @@ function MobileAppInner() {
             isOpen={showProfile}
             onClose={() => setShowProfile(false)}
             isLoggedIn={isLoggedIn}
+            onOpenMyProfile={openMyProfile}
+            onOpenMyAccount={openMyAccount}
+            onOpenManageLeapSpace={openManageLeapSpace}
             onSignInClick={(email) => {
               console.log('✅ Auth Success: Logging user in');
               setAuthEmail(email || 'sarah@leapspace.io');
@@ -569,6 +604,24 @@ function MobileAppInner() {
               setShowProfile(false);
               toast.success("Welcome back!");
             }}
+          />
+
+          <AccountCenterScreen
+            isOpen={showAccountCenter}
+            onClose={() => setShowAccountCenter(false)}
+            initialGroup={accountCenterGroup}
+            initialSection={accountCenterSection as any}
+            settings={mobileSettings}
+            onSave={setMobileSettings}
+          />
+
+          <ManageLeapSpaceScreen
+            isOpen={showManageLeapSpace}
+            onClose={() => setShowManageLeapSpace(false)}
+            currentLeapspaceId={currentLeapspace}
+            onCurrentLeapspaceChange={setCurrentLeapspace}
+            settings={mobileSettings}
+            onSave={setMobileSettings}
           />
 
           {/* Auth Screens */}

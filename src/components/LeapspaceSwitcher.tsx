@@ -15,6 +15,7 @@ interface LeapspaceSwitcherProps {
   onClose: () => void;
   currentLeapspace: string;
   onSwitch: (leapspaceId: string) => void;
+  onOpenManageLeapSpace?: () => void;
 }
 
 const mockLeapspaces: Leapspace[] = [
@@ -29,7 +30,8 @@ export function LeapspaceSwitcher({
   isOpen, 
   onClose, 
   currentLeapspace,
-  onSwitch 
+  onSwitch,
+  onOpenManageLeapSpace,
 }: LeapspaceSwitcherProps) {
   const [isAddLeapspaceModalOpen, setIsAddLeapspaceModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -197,11 +199,14 @@ export function LeapspaceSwitcher({
           </button>
           
           <button 
-            onClick={() => console.log('Preferences')}
+            onClick={() => {
+              onClose();
+              onOpenManageLeapSpace?.();
+            }}
             className="w-full flex items-center gap-3 px-6 py-4 active:bg-gray-50 transition-colors"
           >
             <Settings className="size-5 text-gray-700" />
-            <span className="text-gray-900">Preferences</span>
+            <span className="text-gray-900">Manage LeapSpace</span>
           </button>
           
           <button 

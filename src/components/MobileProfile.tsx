@@ -1,5 +1,4 @@
-import { X, ChevronRight, Moon, User, Settings, LogOut, Bell, ChevronDown, Shield, History, LayoutGrid, HelpCircle, ArrowLeft, PenSquare, Smartphone, Rocket, Link as LinkIcon, AlertCircle, Mail, CreditCard, BookOpen } from 'lucide-react';
-import { SettingsModal } from './SettingsModal';
+import { X, ChevronRight, Moon, User, Settings, LogOut, Bell, ChevronDown, Shield, History, LayoutGrid, HelpCircle, ArrowLeft, PenSquare, Smartphone, Rocket, Link as LinkIcon, AlertCircle, Mail, CreditCard, BookOpen, UserCircle2, Briefcase } from 'lucide-react';
 import { IntegrationsList } from './auth/IntegrationsList';
 import { useState, useRef, useEffect } from 'react';
 
@@ -8,13 +7,22 @@ interface MobileProfileProps {
   onClose: () => void;
   isLoggedIn?: boolean;
   onSignInClick?: (email: string) => void;
+  onOpenMyProfile?: () => void;
+  onOpenMyAccount?: () => void;
+  onOpenManageLeapSpace?: () => void;
 }
 
 type LoginStep = 'LANDING' | 'INIT' | 'OTP' | 'PROFILE' | 'MERGE' | 'INTEGRATIONS';
 
-export function MobileProfile({ isOpen, onClose, isLoggedIn = false, onSignInClick }: MobileProfileProps) {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  
+export function MobileProfile({
+  isOpen,
+  onClose,
+  isLoggedIn = false,
+  onSignInClick,
+  onOpenMyProfile,
+  onOpenMyAccount,
+  onOpenManageLeapSpace,
+}: MobileProfileProps) {
   const [loginStep, setLoginStep] = useState<LoginStep>('LANDING');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -81,7 +89,11 @@ export function MobileProfile({ isOpen, onClose, isLoggedIn = false, onSignInCli
 
           <div className="flex-1 overflow-y-auto no-scrollbar bg-muted/30">
             {isLoggedIn ? (
-              <LoggedInView setIsSettingsOpen={setIsSettingsOpen} />
+              <LoggedInView
+                onOpenMyProfile={onOpenMyProfile}
+                onOpenMyAccount={onOpenMyAccount}
+                onOpenManageLeapSpace={onOpenManageLeapSpace}
+              />
             ) : (
               <div className="min-h-full bg-card px-6 py-8 flex flex-col relative">
                 {loginStep === 'LANDING' && (
@@ -113,8 +125,6 @@ export function MobileProfile({ isOpen, onClose, isLoggedIn = false, onSignInCli
             )}
           </div>
       </div>
-      
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }
@@ -484,7 +494,15 @@ function SocialButton({ icon, label }: { icon: string, label: string }) {
 
 // --- Logged In View ---
 
-function LoggedInView({ setIsSettingsOpen }: { setIsSettingsOpen: (v: boolean) => void }) {
+function LoggedInView({
+  onOpenMyProfile,
+  onOpenMyAccount,
+  onOpenManageLeapSpace,
+}: {
+  onOpenMyProfile?: () => void;
+  onOpenMyAccount?: () => void;
+  onOpenManageLeapSpace?: () => void;
+}) {
   return (
     <div className="px-4 py-6 pb-12 space-y-6 animate-in slide-in-from-right duration-300">
       {/* Profile Header */}
@@ -501,10 +519,13 @@ function LoggedInView({ setIsSettingsOpen }: { setIsSettingsOpen: (v: boolean) =
         <h2 className="text-xl text-foreground mb-1">John Doe</h2>
         <p className="text-sm text-muted-foreground mb-4">john.doe@example.com</p>
         
-        <button className="px-5 py-2.5 rounded-full border border-border text-sm text-secondary-foreground hover:bg-muted active:bg-secondary transition-colors w-full sm:w-auto">
-          Manage your LeapSpace Account
-        </button>
-      </div>
+         <button
+           onClick={onOpenManageLeapSpace}
+           className="px-5 py-2.5 rounded-full border border-border text-sm text-secondary-foreground hover:bg-muted active:bg-secondary transition-colors w-full sm:w-auto"
+         >
+           Manage LeapSpace
+         </button>
+       </div>
 
       {/* Account Switcher Card */}
       <div className="bg-card rounded-2xl overflow-hidden border border-border">
@@ -535,18 +556,42 @@ function LoggedInView({ setIsSettingsOpen }: { setIsSettingsOpen: (v: boolean) =
       {/* Settings Menu Groups */}
       <div className="space-y-6">
          <div>
-            <h3 className="px-2 text-xs text-muted-foreground uppercase tracking-wider mb-2">Workspace</h3>
+            <h3 className="px-2 text-xs text-muted-foreground uppercase tracking-wider mb-2">Account Center</h3>
+            <div className="bg-card rounded-2xl overflow-hidden border border-border">
+               <MenuItem
+                 icon={<UserCircle2 className="text-muted-foreground" />}
+                 label="My Profile"
+                 subLabel="Professional identity and visibility"
+                 onClick={onOpenMyProfile}
+               />
+               <MenuItem
+                 icon={<Settings className="text-muted-foreground" />}
+                 label="My Account"
+                 subLabel="Authentication, billing, sessions, and preferences"
+                 onClick={onOpenMyAccount}
+               />
+               <MenuItem
+                 icon={<Briefcase className="text-muted-foreground" />}
+                 label="Manage LeapSpace"
+                 subLabel="Scoped profile, notifications, and role-based controls"
+                 onClick={onOpenManageLeapSpace}
+               />
+            </div>
+          </div>
+
+          <div>
+            <h3 className="px-2 text-xs text-muted-foreground uppercase tracking-wider mb-2">Activity</h3>
             <div className="bg-card rounded-2xl overflow-hidden border border-border">
                <MenuItem icon={<PenSquare className="text-muted-foreground" />} label="Drafts" />
                <MenuItem icon={<History className="text-muted-foreground" />} label="Recently viewed" />
-               <MenuItem icon={<LayoutGrid className="text-muted-foreground" />} label="Connected Accounts" />
+               <MenuItem icon={<LayoutGrid className="text-muted-foreground" />} label="Connected work" />
             </div>
          </div>
 
          <div>
             <h3 className="px-2 text-xs text-muted-foreground uppercase tracking-wider mb-2">Plan & Preferences</h3>
             <div className="bg-card rounded-2xl overflow-hidden border border-border">
-               <MenuItem icon={<CreditCard className="text-muted-foreground" />} label="Billing & Plans" subLabel="Free Plan" />
+               <MenuItem icon={<CreditCard className="text-muted-foreground" />} label="Billing" subLabel="Business plan billed monthly" onClick={onOpenMyAccount} />
                <MenuItem icon={<Bell className="text-muted-foreground" />} label="Notifications" subLabel="On" />
                <MenuItem icon={<Moon className="text-muted-foreground" />} label="Appearance" subLabel="Light mode" />
             </div>
@@ -557,14 +602,9 @@ function LoggedInView({ setIsSettingsOpen }: { setIsSettingsOpen: (v: boolean) =
             <div className="bg-card rounded-2xl overflow-hidden border border-border">
                <MenuItem icon={<BookOpen className="text-muted-foreground" />} label="Training & Tutorials" />
                <MenuItem icon={<HelpCircle className="text-muted-foreground" />} label="Help & Feedback" />
-               <MenuItem 
-                 icon={<Settings className="text-muted-foreground" />} 
-                 label="Settings" 
-                 onClick={() => setIsSettingsOpen(true)}
-               />
                <MenuItem icon={<LogOut className="text-destructive" />} label="Sign out" isDestructive />
             </div>
-         </div>
+          </div>
       </div>
       
       <div className="pt-4 text-center text-xs text-muted-foreground">
