@@ -1,0 +1,13 @@
+/* Purple color overrides for #420D74 */
+:root {
+  --purple-primary: #420D74;
+  --purple-dark: #331059;
+  --purple-light: #6B1DAA;
+  --purple-50: #F9F4FC;
+  --purple-100: #F0E6F8;
+  --purple-200: #E8D5F5;
+  --purple-600: #420D74;
+  --purple-700: #331059;
+  --purple-800: #250841;
+  --purple-900: #1A0630;
+}
