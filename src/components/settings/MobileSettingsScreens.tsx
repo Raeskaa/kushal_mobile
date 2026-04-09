@@ -756,7 +756,7 @@ export function AccountCenterScreen({ isOpen, onClose, initialGroup, initialSect
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-background">
+    <div className="fixed inset-0 z-[110] bg-background">
       <div className="flex h-full flex-col">
         <ScreenHeader
           title={sectionTitle}
@@ -766,7 +766,7 @@ export function AccountCenterScreen({ isOpen, onClose, initialGroup, initialSect
           onBack={activeSection ? () => setActiveSection(null) : onClose}
         />
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 pb-28">
+        <div className="flex-1 overflow-y-auto bg-muted/30 pb-40">
           {activeSection ? (
             <div className="space-y-4 px-4 py-4">
               {renderGlobalSection(activeSection, draftState, setDraftState)}
@@ -988,7 +988,7 @@ export function ManageLeapSpaceScreen({
   };
 
   return (
-    <div className="fixed inset-0 z-[81] bg-background">
+    <div className="fixed inset-0 z-[111] bg-background">
       <div className="flex h-full flex-col">
         <ScreenHeader
           title={activeSection ? getLeapSpaceSectionLabel(activeSection) : 'Manage LeapSpace'}
